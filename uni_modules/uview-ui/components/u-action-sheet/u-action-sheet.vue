@@ -1,85 +1,40 @@
-
 <template>
-	<u-popup
-	    :show="show"
-	    mode="bottom"
-	    @close="closeHandler"
-	    :safeAreaInsetBottom="safeAreaInsetBottom"
-	    :round="round"
-	>
+	<u-popup :show="show" mode="bottom" @close="closeHandler" :safeAreaInsetBottom="safeAreaInsetBottom" :round="round">
 		<view class="u-action-sheet">
-			<view
-			    class="u-action-sheet__header"
-			    v-if="title"
-			>
+			<view class="u-action-sheet__header" v-if="title">
 				<text class="u-action-sheet__header__title u-line-1">{{title}}</text>
-				<view
-				    class="u-action-sheet__header__icon-wrap"
-				    @tap.stop="cancel"
-				>
-					<u-icon
-					    name="close"
-					    size="17"
-					    color="#c8c9cc"
-					    bold
-					></u-icon>
+				<view v-if="isCancelIcon" class="u-action-sheet__header__icon-wrap" @tap.stop="cancel">
+					<u-icon name="close" size="17" color="#c8c9cc" bold></u-icon>
 				</view>
 			</view>
-			<text
-			    class="u-action-sheet__description"
-				:style="[{
+			<text class="u-action-sheet__description" :style="[{
 					marginTop: `${title && description ? 0 : '18px'}`
-				}]"
-			    v-if="description"
-			>{{description}}</text>
+				}]" v-if="description">{{description}}</text>
 			<slot>
 				<u-line v-if="description"></u-line>
 				<view class="u-action-sheet__item-wrap">
 					<template v-for="(item, index) in actions">
 						<!-- #ifdef MP -->
-						<button
-						    :key="index"
-						    class="u-reset-button"
-						    :openType="item.openType"
-						    @getuserinfo="onGetUserInfo"
-						    @contact="onContact"
-						    @getphonenumber="onGetPhoneNumber"
-						    @error="onError"
-						    @launchapp="onLaunchApp"
-						    @opensetting="onOpenSetting"
-						    :lang="lang"
-						    :session-from="sessionFrom"
-						    :send-message-title="sendMessageTitle"
-						    :send-message-path="sendMessagePath"
-						    :send-message-img="sendMessageImg"
-						    :show-message-card="showMessageCard"
-						    :app-parameter="appParameter"
-						    @tap="selectHandler(index)"
-						    :hover-class="!item.disabled && !item.loading ? 'u-action-sheet--hover' : ''"
-						>
+						<button :key="index" class="u-reset-button" :openType="item.openType"
+							@getuserinfo="onGetUserInfo" @contact="onContact" @getphonenumber="onGetPhoneNumber"
+							@error="onError" @launchapp="onLaunchApp" @opensetting="onOpenSetting" :lang="lang"
+							:session-from="sessionFrom" :send-message-title="sendMessageTitle"
+							:send-message-path="sendMessagePath" :send-message-img="sendMessageImg"
+							:show-message-card="showMessageCard" :app-parameter="appParameter"
+							@tap="selectHandler(index)"
+							:hover-class="!item.disabled && !item.loading ? 'u-action-sheet--hover' : ''">
 							<!-- #endif -->
-							<view
-							    class="u-action-sheet__item-wrap__item"
-							    @tap.stop="selectHandler(index)"
-							    :hover-class="!item.disabled && !item.loading ? 'u-action-sheet--hover' : ''"
-							    :hover-stay-time="150"
-							>
+							<view class="u-action-sheet__item-wrap__item" @tap.stop="selectHandler(index)"
+								:hover-class="!item.disabled && !item.loading ? 'u-action-sheet--hover' : ''"
+								:hover-stay-time="150">
 								<template v-if="!item.loading">
-									<text
-									    class="u-action-sheet__item-wrap__item__name"
-									    :style="[itemStyle(index)]"
-									>{{ item.name }}</text>
-									<text
-									    v-if="item.subname"
-									    class="u-action-sheet__item-wrap__item__subname"
-									>{{ item.subname }}</text>
+									<text class="u-action-sheet__item-wrap__item__name"
+										:style="[itemStyle(index)]">{{ item.name }}</text>
+									<text v-if="item.subname"
+										class="u-action-sheet__item-wrap__item__subname">{{ item.subname }}</text>
 								</template>
-								<u-loading-icon
-								    v-else
-								    custom-class="van-action-sheet__loading"
-								    size="18"
-								    mode="circle"
-								/>
+								<u-loading-icon v-else custom-class="van-action-sheet__loading" size="18"
+									mode="circle" />
 							</view>
 							<!-- #ifdef MP -->
 						</button>
@@ -88,19 +43,10 @@
 					</template>
 				</view>
 			</slot>
-			<u-gap
-			    bgColor="#eaeaec"
-			    height="6"
-			    v-if="cancelText"
-			></u-gap>
+			<u-gap bgColor="#eaeaec" height="6" v-if="cancelText"></u-gap>
 			<view hover-class="u-action-sheet--hover">
-				<text
-				    @touchmove.stop.prevent
-				    :hover-stay-time="150"
-				    v-if="cancelText"
-				    class="u-action-sheet__cancel-text"
-				    @tap="cancel"
-				>{{cancelText}}</text>
+				<text @touchmove.stop.prevent :hover-stay-time="150" v-if="cancelText"
+					class="u-action-sheet__cancel-text" @tap="cancel">{{cancelText}}</text>
 			</view>
 		</view>
 	</u-popup>
@@ -132,6 +78,7 @@
 	 * @property {String}			sendMessageImg		会话内消息卡片图片，openType="contact"时有效
 	 * @property {Boolean}			showMessageCard		是否显示会话内消息卡片，设置此参数为 true，用户进入客服会话会在右下角显示"可能要发送的小程序"提示，用户点击后可以快速发送小程序消息，openType="contact"时有效 （默认 false ）
 	 * @property {String}			appParameter		打开 APP 时，向 APP 传递的参数，openType=launchApp 时有效
+	 * property {Boolean} 			isCancelIcon 		是否显示右上角关闭图标
 	 * 
 	 * @event {Function} select			点击ActionSheet列表项时触发 
 	 * @event {Function} close			点击取消按钮时触发
@@ -168,7 +115,7 @@
 		methods: {
 			closeHandler() {
 				// 允许点击遮罩关闭时，才发出close事件
-				if(this.closeOnClickOverlay) {
+				if (this.closeOnClickOverlay) {
 					this.$emit('close')
 				}
 			},
@@ -216,9 +163,11 @@
 
 	.u-action-sheet {
 		text-align: center;
+
 		&__header {
 			position: relative;
 			padding: $u-action-sheet-title-padding;
+
 			&__title {
 				font-size: $u-action-sheet-title-font-size;
 				color: $u-action-sheet-title-color;
